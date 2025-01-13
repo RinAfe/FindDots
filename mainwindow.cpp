@@ -120,21 +120,31 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel* greetingLabel2 = new QLabel(this);
     greetingLabel2->setGeometry(10, 310, this->width(), 150);
     greetingLabel2->setAlignment(Qt::AlignCenter);
-    greetingLabel2->setStyleSheet("color: gray; font-size: 30px; letter-spacing: 20px; font-weight: bold; background-color: rgba(255, 255, 255, 0);");
+    greetingLabel2->setStyleSheet("color: gray; font-size: 25px; letter-spacing: 10px; font-weight: bold; background-color: rgba(255, 255, 255, 0);");
 
-    QString message = "ДОБРО ПОЖАЛОВАТЬ";
-    int messageLength = message.length();
-    int currentIndex = 0;
+    QString message1 = "ДОБРО ПОЖАЛОВАТЬ";
+    QString message2 = "Давайте начнем погружение\nв мир математики";
+    int currentIndex = 0;  // Общий индекс
+    int state = 0;         // Состояние: 0 - первая строка, 1 - вторая строка
 
     QTimer* textTimer = new QTimer(this);
 
-    connect(textTimer, &QTimer::timeout, this, [greetingLabel1, &currentIndex, message, messageLength, textTimer]() {
-        if (currentIndex < messageLength) {
-            greetingLabel1->setText(message.left(currentIndex + 1));
-            ++currentIndex;
-        } else {
-            textTimer->stop();
-            delete textTimer;
+    connect(textTimer, &QTimer::timeout, this, [=]() mutable {
+        if (state == 0) {  // Первая строка
+            if (currentIndex < message1.length()) {
+                greetingLabel1->setText(message1.left(currentIndex + 1));
+                currentIndex++;
+            } else {
+                state = 1;        // Переходим ко второй строке
+                currentIndex = 0; // Сбрасываем индекс
+            }
+        } else if (state == 1) { // Вторая строка
+            if (currentIndex < message2.length()) {
+                greetingLabel2->setText(message2.left(currentIndex + 1));
+                currentIndex++;
+            } else {
+                textTimer->stop(); // Останавливаем таймер после завершения
+            }
         }
     });
 
@@ -148,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(minimizeButton, &QPushButton::clicked, this, &QMainWindow::showMinimized);
 
-    QTimer::singleShot(7000, this,[this](){
+    QTimer::singleShot(12300, this,[this](){
 
         // Устанавливаем эффект прозрачности
         QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(startButton);
