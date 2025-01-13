@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d33f87617264df606843.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "IkosDodek",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "IkosDodek::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IkosDodek-Debug-f3f9b9b8edb4fdf77099.json",
+					"name" : "IkosDodek",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IkosDodek_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IkosDodek_autogen-Debug-512d9a2bf58fb9001bc5.json",
+					"name" : "IkosDodek_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "IkosDodek_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IkosDodek_autogen_timestamp_deps-Debug-2fcbe3be2da34bba7320.json",
+					"name" : "IkosDodek_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/cprog/QT/IkosDodek/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug",
+		"source" : "D:/cprog/QT/IkosDodek"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
