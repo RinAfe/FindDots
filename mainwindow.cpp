@@ -7,7 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     movie(new QMovie(":/res/gifff.gif")),
     startButton(new QPushButton(this)),
     closeButton(new QPushButton(this)),
-    minimizeButton(new QPushButton(this))
+    minimizeButton(new QPushButton(this)),
+    icosahedron(new Icosahedron(this))
 {
     ui->setupUi(this);
 
@@ -20,11 +21,14 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget* centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    centralWidget->setStyleSheet("background-color: black; border: none;");
+    //centralWidget->setStyleSheet("background-color: black; border: none;");
 
     QVBoxLayout* layout = new QVBoxLayout(centralWidget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
+
+    layout->addWidget(icosahedron);
+    icosahedron->hide();
 
     label->setGeometry(this->geometry());
     label->setAlignment(Qt::AlignCenter);
@@ -112,12 +116,12 @@ MainWindow::MainWindow(QWidget *parent)
     overlay->setVisible(true);
 
     // Приветственные надписи
-    QLabel* greetingLabel1 = new QLabel(this);
+    greetingLabel1->setParent(this);
     greetingLabel1->setGeometry(10, 220, this->width(), 150);
     greetingLabel1->setAlignment(Qt::AlignCenter);
     greetingLabel1->setStyleSheet("color: white; font-size: 37px; letter-spacing: 20px; font-weight: bold; background-color: rgba(255, 255, 255, 0);");
 
-    QLabel* greetingLabel2 = new QLabel(this);
+    greetingLabel2->setParent(this);
     greetingLabel2->setGeometry(10, 310, this->width(), 150);
     greetingLabel2->setAlignment(Qt::AlignCenter);
     greetingLabel2->setStyleSheet("color: gray; font-size: 25px; letter-spacing: 10px; font-weight: bold; background-color: rgba(255, 255, 255, 0);");
@@ -129,36 +133,52 @@ MainWindow::MainWindow(QWidget *parent)
 
     QTimer* textTimer = new QTimer(this);
 
+    QTimer *blinkTimer = new QTimer(this); // Таймер для мигания палочки
+    bool showCursor = true;               // Переменная, управляющая отображением палочки
+
     connect(textTimer, &QTimer::timeout, this, [=]() mutable {
         if (state == 0) {  // Первая строка
             if (currentIndex < message1.length()) {
-                greetingLabel1->setText(message1.left(currentIndex + 1));
+                greetingLabel1->setText(message1.left(currentIndex + 1) + "|");
                 currentIndex++;
             } else {
-                state = 1;        // Переходим ко второй строке
-                currentIndex = 0; // Сбрасываем индекс
+                QString temp = greetingLabel1->text();
+                temp.chop(1); // Удаляем палочку
+                greetingLabel1->setText(temp);
+                state = 1;    // Переходим ко второй строке
+                currentIndex = 0;
             }
         } else if (state == 1) { // Вторая строка
             if (currentIndex < message2.length()) {
-                greetingLabel2->setText(message2.left(currentIndex + 1));
+                greetingLabel2->setText(message2.left(currentIndex + 1) + "|");
                 currentIndex++;
             } else {
-                textTimer->stop(); // Останавливаем таймер после завершения
+                textTimer->stop(); // Останавливаем основной таймер
+
+                // Запускаем таймер для мигания палочки
+                connect(blinkTimer, &QTimer::timeout, this, [=]() mutable {
+                    if (showCursor) {
+                        greetingLabel2->setText(message2 + "|");
+                    } else {
+                        greetingLabel2->setText(message2 + " ");
+                    }
+                    showCursor = !showCursor;
+                });
+
+                blinkTimer->start(500);
             }
         }
     });
 
     textTimer->start(200);
 
-    connect(startButton, &QPushButton::clicked,this, [](){
-        qDebug("Кнопка нажата!");
-    });
+    connect(startButton, &QPushButton::clicked,this, &MainWindow::onStartButton);
 
     connect(closeButton, &QPushButton::clicked, this, &QMainWindow::close);
 
     connect(minimizeButton, &QPushButton::clicked, this, &QMainWindow::showMinimized);
 
-    QTimer::singleShot(12300, this,[this](){
+    QTimer::singleShot(12500, this,[this](){
 
         // Устанавливаем эффект прозрачности
         QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(startButton);
@@ -166,7 +186,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         // Создаем анимацию прозрачности
         QPropertyAnimation* fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity", this);
-        fadeAnimation->setDuration(1000); // Длительность анимации - 1 секунда
+        fadeAnimation->setDuration(2000); // Длительность анимации - 1 секунда
         fadeAnimation->setStartValue(0.0); // Начальная прозрачность
         fadeAnimation->setEndValue(1.0);   // Конечная прозрачность
 
@@ -174,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent)
         startButton->setVisible(true);
         fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     });
+
 }
 
 MainWindow::~MainWindow()
@@ -181,4 +202,28 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::onStartButton(){
+    QList<QWidget*> widgetsToDelete = {greetingLabel1, greetingLabel2, startButton};
+
+    for (auto widget : widgetsToDelete) {
+        QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(widget);
+        widget->setGraphicsEffect(opacityEffect);
+
+        QPropertyAnimation* fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity", this);
+        fadeAnimation->setDuration(1000);
+        fadeAnimation->setStartValue(1.0);
+        fadeAnimation->setEndValue(0.0);
+
+        connect(fadeAnimation, &QPropertyAnimation::finished, widget, [widget]() {
+            widget->deleteLater();
+        });
+
+        fadeAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+
+    QTimer::singleShot(2000, this, [=](){
+        Icos = new QPushButton();
+    });
+
+}
 

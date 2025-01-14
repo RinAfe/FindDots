@@ -12,6 +12,8 @@
 #include <QTimer>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <QList>
+#include "Icosahedron.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +29,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void onStartButton();
+
 private:
     Ui::MainWindow *ui;
 
@@ -37,8 +41,16 @@ private:
     QLabel* label;
     QMovie* movie;
 
+    QPushButton* Icos;
+    QPushButton* Dodec;
+
     QPushButton* startButton;
     QPushButton* closeButton;
     QPushButton* minimizeButton;
+
+    QLabel* greetingLabel1 = new QLabel();
+    QLabel* greetingLabel2 = new QLabel();
+
+    Icosahedron* icosahedron;
 };
 #endif // MAINWINDOW_H
